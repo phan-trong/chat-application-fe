@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import {  useRef, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 
 import { NavLink } from 'react-router-dom';
 
@@ -22,6 +23,7 @@ import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
 import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone';
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone';
 import AccountTreeTwoToneIcon from '@mui/icons-material/AccountTreeTwoTone';
+import { User } from 'src/models/user';
 
 const UserBoxButton = styled(Button)(
   ({ theme }) => `
@@ -59,11 +61,8 @@ const UserBoxDescription = styled(Typography)(
 );
 
 function HeaderUserbox() {
-  const user = {
-    name: 'Catherine Pike',
-    avatar: '/static/images/avatars/1.jpg',
-    jobtitle: 'Project Manager'
-  };
+  let navigate = useNavigate();
+  let user: User = JSON.parse(localStorage.getItem("user"));
 
   const ref = useRef<any>(null);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -76,15 +75,20 @@ function HeaderUserbox() {
     setOpen(false);
   };
 
+  const handleLogout = (): void => {
+    localStorage.clear()
+    navigate(`/login`);
+  }
+
   return (
     <>
       <UserBoxButton color="secondary" ref={ref} onClick={handleOpen}>
-        <Avatar variant="rounded" alt={user.name} src={user.avatar} />
+        <Avatar variant="rounded" alt={user.full_name} src={user.avatar} />
         <Hidden mdDown>
           <UserBoxText>
-            <UserBoxLabel variant="body1">{user.name}</UserBoxLabel>
+            <UserBoxLabel variant="body1">{user.full_name}</UserBoxLabel>
             <UserBoxDescription variant="body2">
-              {user.jobtitle}
+              {user.email}
             </UserBoxDescription>
           </UserBoxText>
         </Hidden>
@@ -106,11 +110,11 @@ function HeaderUserbox() {
         }}
       >
         <MenuUserBox sx={{ minWidth: 210 }} display="flex">
-          <Avatar variant="rounded" alt={user.name} src={user.avatar} />
+          <Avatar variant="rounded" alt={user.full_name} src={user.avatar} />
           <UserBoxText>
-            <UserBoxLabel variant="body1">{user.name}</UserBoxLabel>
+            <UserBoxLabel variant="body1">{user.full_name}</UserBoxLabel>
             <UserBoxDescription variant="body2">
-              {user.jobtitle}
+              {user.email}
             </UserBoxDescription>
           </UserBoxText>
         </MenuUserBox>
@@ -135,7 +139,7 @@ function HeaderUserbox() {
         </List>
         <Divider />
         <Box sx={{ m: 1 }}>
-          <Button color="primary" fullWidth>
+          <Button onClick={ handleLogout } color="primary" fullWidth>
             <LockOpenTwoToneIcon sx={{ mr: 1 }} />
             Sign out
           </Button>

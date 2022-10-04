@@ -10,6 +10,8 @@ import {
 } from '@mui/material';
 import AttachFileTwoToneIcon from '@mui/icons-material/AttachFileTwoTone';
 import SendTwoToneIcon from '@mui/icons-material/SendTwoTone';
+import { sendMsg } from "src/websocket";
+import { useState } from 'react';
 
 const MessageInputWrapper = styled(InputBase)(
   ({ theme }) => `
@@ -23,13 +25,27 @@ const Input = styled('input')({
   display: 'none'
 });
 
-function BottomBarContent() {
+function BottomBarContent(props) {
   const theme = useTheme();
 
   const user = {
     name: 'Catherine Pike',
     avatar: '/static/images/avatars/1.jpg'
   };
+
+  const [message, setMessage] = useState("");
+
+  const handleSendMessage = (event) => {
+    if(event.keyCode === 13) {
+      sendMsg(message);
+      setMessage("");
+    }
+  }
+
+  const handleClickSendMessage = () => {
+    sendMsg(message);
+    setMessage("");
+  }
 
   return (
     <Box
@@ -50,6 +66,9 @@ function BottomBarContent() {
           autoFocus
           placeholder="Write your message here..."
           fullWidth
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          onKeyDown={handleSendMessage}
         />
       </Box>
       <Box>
@@ -69,7 +88,7 @@ function BottomBarContent() {
             </IconButton>
           </label>
         </Tooltip>
-        <Button startIcon={<SendTwoToneIcon />} variant="contained">
+        <Button onClick={handleClickSendMessage} startIcon={<SendTwoToneIcon />} variant="contained">
           Send
         </Button>
       </Box>

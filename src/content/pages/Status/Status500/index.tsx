@@ -63,7 +63,7 @@ function Status500() {
         >
           <Grid
             xs={12}
-            md={6}
+            md={12}
             alignItems="center"
             display="flex"
             justifyContent="center"
@@ -103,7 +103,7 @@ function Status500() {
               </Box>
             </Container>
           </Grid>
-          <Hidden mdDown>
+          {/* <Hidden mdDown>
             <GridWrapper
               xs={12}
               md={6}
@@ -132,7 +132,7 @@ function Status500() {
                 </Box>
               </Container>
             </GridWrapper>
-          </Hidden>
+          </Hidden> */}
         </Grid>
       </MainContent>
     </>

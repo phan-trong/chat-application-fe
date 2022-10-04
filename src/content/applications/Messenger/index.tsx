@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Helmet } from 'react-helmet-async';
 
@@ -9,6 +9,7 @@ import ChatContent from './ChatContent';
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 
 import Scrollbar from 'src/components/Scrollbar';
+import { connect, sendMsg } from "src/websocket";
 
 import {
   Box,
@@ -76,6 +77,16 @@ const DrawerWrapperMobile = styled(Drawer)(
 function ApplicationsMessenger() {
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+
+  useEffect(() => {
+    connect((msg) => {
+      console.log("New Message: ", msg.data)
+      setChatHistory([
+        ...chatHistory, msg.data
+      ])
+    });
+  }, [chatHistory]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -130,7 +141,7 @@ function ApplicationsMessenger() {
           </ChatTopBar>
           <Box flex={1}>
             <Scrollbar>
-              <ChatContent />
+              <ChatContent chatHistory={chatHistory} />
             </Scrollbar>
           </Box>
           <Divider />

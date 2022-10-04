@@ -393,7 +393,7 @@ function SidebarContent() {
           }}
           variant="h3"
         >
-          Meetings
+          Chat Room
         </Typography>
         <Label color="success">
           <b>2</b>

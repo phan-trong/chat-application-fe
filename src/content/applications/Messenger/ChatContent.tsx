@@ -1,4 +1,5 @@
 import { Box, Avatar, Typography, Card, styled, Divider } from '@mui/material';
+import { useRef, useEffect } from 'react';
 
 import {
   formatDistance,
@@ -45,19 +46,83 @@ const CardWrapperSecondary = styled(Card)(
 `
 );
 
-function ChatContent() {
+function ChatContent(props) {
   const user = {
     name: 'Catherine Pike',
     avatar: '/static/images/avatars/1.jpg'
   };
 
+  const messageRef = useRef<null | HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messageRef.current) {
+      messageRef.current.scrollIntoView(
+        {
+          behavior: 'smooth',
+          block: 'end',
+          inline: 'nearest'
+        })
+    }
+  })
+
   return (
-    <Box p={3}>
+    <Box p={3} ref={messageRef}>
       <DividerWrapper>
         {format(subDays(new Date(), 3), 'MMMM dd yyyy')}
       </DividerWrapper>
-
-      <Box
+      {props.chatHistory.map((msg, index) => {
+                return (
+                  
+                  <Box
+                  key={index}
+                  display="flex"
+                  alignItems="flex-start"
+                  justifyContent="flex-end"
+                  py={3}
+                >
+                  <Box
+                    display="flex"
+                    alignItems="flex-end"
+                    flexDirection="column"
+                    justifyContent="flex-end"
+                    mr={2}
+                  >
+                    <CardWrapperPrimary>
+                      {msg}
+                    </CardWrapperPrimary>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        pt: 1,
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <ScheduleTwoToneIcon
+                        sx={{
+                          mr: 0.5
+                        }}
+                        fontSize="small"
+                      />
+                      {formatDistance(subHours(new Date(), 125), new Date(), {
+                        addSuffix: true
+                      })}
+                    </Typography>
+                  </Box>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      width: 50,
+                      height: 50
+                    }}
+                    alt={user.name}
+                    src={user.avatar}
+                  />
+                </Box>
+                )
+            })}
+      {/*  Message Receive */}
+      {/* <Box
         display="flex"
         alignItems="flex-start"
         justifyContent="flex-start"
@@ -101,9 +166,9 @@ function ChatContent() {
             })}
           </Typography>
         </Box>
-      </Box>
-
-      <Box
+      </Box> */}
+      {/*  Message Send */}
+      {/* <Box
         display="flex"
         alignItems="flex-start"
         justifyContent="flex-end"
@@ -148,165 +213,7 @@ function ChatContent() {
           alt={user.name}
           src={user.avatar}
         />
-      </Box>
-      <DividerWrapper>
-        {format(subDays(new Date(), 5), 'MMMM dd yyyy')}
-      </DividerWrapper>
-
-      <Box
-        display="flex"
-        alignItems="flex-start"
-        justifyContent="flex-end"
-        py={3}
-      >
-        <Box
-          display="flex"
-          alignItems="flex-end"
-          flexDirection="column"
-          justifyContent="flex-end"
-          mr={2}
-        >
-          <CardWrapperPrimary>Hey! Are you there?</CardWrapperPrimary>
-          <CardWrapperPrimary
-            sx={{
-              mt: 2
-            }}
-          >
-            Heeeelloooo????
-          </CardWrapperPrimary>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              pt: 1,
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <ScheduleTwoToneIcon
-              sx={{
-                mr: 0.5
-              }}
-              fontSize="small"
-            />
-            {formatDistance(subHours(new Date(), 60), new Date(), {
-              addSuffix: true
-            })}
-          </Typography>
-        </Box>
-        <Avatar
-          variant="rounded"
-          sx={{
-            width: 50,
-            height: 50
-          }}
-          alt={user.name}
-          src={user.avatar}
-        />
-      </Box>
-      <DividerWrapper>Today</DividerWrapper>
-      <Box
-        display="flex"
-        alignItems="flex-start"
-        justifyContent="flex-start"
-        py={3}
-      >
-        <Avatar
-          variant="rounded"
-          sx={{
-            width: 50,
-            height: 50
-          }}
-          alt="Zain Baptista"
-          src="/static/images/avatars/2.jpg"
-        />
-        <Box
-          display="flex"
-          alignItems="flex-start"
-          flexDirection="column"
-          justifyContent="flex-start"
-          ml={2}
-        >
-          <CardWrapperSecondary>Hey there!</CardWrapperSecondary>
-          <CardWrapperSecondary
-            sx={{
-              mt: 1
-            }}
-          >
-            How are you? Is it ok if I call you?
-          </CardWrapperSecondary>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              pt: 1,
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <ScheduleTwoToneIcon
-              sx={{
-                mr: 0.5
-              }}
-              fontSize="small"
-            />
-            {formatDistance(subMinutes(new Date(), 6), new Date(), {
-              addSuffix: true
-            })}
-          </Typography>
-        </Box>
-      </Box>
-      <Box
-        display="flex"
-        alignItems="flex-start"
-        justifyContent="flex-end"
-        py={3}
-      >
-        <Box
-          display="flex"
-          alignItems="flex-end"
-          flexDirection="column"
-          justifyContent="flex-end"
-          mr={2}
-        >
-          <CardWrapperPrimary>
-            Hello, I just got my Amazon order shipped and I’m very happy about
-            that.
-          </CardWrapperPrimary>
-          <CardWrapperPrimary
-            sx={{
-              mt: 1
-            }}
-          >
-            Can you confirm?
-          </CardWrapperPrimary>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              pt: 1,
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <ScheduleTwoToneIcon
-              sx={{
-                mr: 0.5
-              }}
-              fontSize="small"
-            />
-            {formatDistance(subMinutes(new Date(), 8), new Date(), {
-              addSuffix: true
-            })}
-          </Typography>
-        </Box>
-        <Avatar
-          variant="rounded"
-          sx={{
-            width: 50,
-            height: 50
-          }}
-          alt={user.name}
-          src={user.avatar}
-        />
-      </Box>
+      </Box> */}
     </Box>
   );
 }
