@@ -16,6 +16,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
 import authService from 'src/services/auth.service';
 import userService from 'src/services/user.service';
+import CustomizedSnackbars from 'src/components/SnackBar';
 
 function Copyright(props: any) {
   return (
@@ -34,6 +35,20 @@ const theme = createTheme();
 
 export default function SignInSide() {
   const navigate = useNavigate();
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   useEffect(() => {
     const userData = localStorage.getItem("user")
@@ -106,6 +121,8 @@ export default function SignInSide() {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
+            <Button variant="outlined" color='secondary' onClick={handleClick} >Hello</Button>
+            <CustomizedSnackbars onClose={handleClose} open={open} key="1" serverity={'success'} />
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"

@@ -9,6 +9,7 @@ import {
   subMinutes
 } from 'date-fns';
 import ScheduleTwoToneIcon from '@mui/icons-material/ScheduleTwoTone';
+import authService from 'src/services/auth.service';
 
 const DividerWrapper = styled(Divider)(
   ({ theme }) => `
@@ -47,10 +48,7 @@ const CardWrapperSecondary = styled(Card)(
 );
 
 function ChatContent(props) {
-  const user = {
-    name: 'Catherine Pike',
-    avatar: '/static/images/avatars/1.jpg'
-  };
+  const user = authService.getCurrentUser();
 
   const messageRef = useRef<null | HTMLDivElement>(null);
 
@@ -71,56 +69,108 @@ function ChatContent(props) {
         {format(subDays(new Date(), 3), 'MMMM dd yyyy')}
       </DividerWrapper>
       {props.chatHistory.map((msg, index) => {
-                return (
-                  
-                  <Box
-                  key={index}
+        if(msg.sender.id == user.id) {
+          
+          return (
+                <Box
+                key={index}
+                display="flex"
+                alignItems="flex-start"
+                justifyContent="flex-end"
+                py={3}
+              >
+                <Box
                   display="flex"
-                  alignItems="flex-start"
+                  alignItems="flex-end"
+                  flexDirection="column"
                   justifyContent="flex-end"
-                  py={3}
+                  mr={2}
                 >
-                  <Box
-                    display="flex"
-                    alignItems="flex-end"
-                    flexDirection="column"
-                    justifyContent="flex-end"
-                    mr={2}
-                  >
-                    <CardWrapperPrimary>
-                      {msg}
-                    </CardWrapperPrimary>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        pt: 1,
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}
-                    >
-                      <ScheduleTwoToneIcon
-                        sx={{
-                          mr: 0.5
-                        }}
-                        fontSize="small"
-                      />
-                      {formatDistance(subHours(new Date(), 125), new Date(), {
-                        addSuffix: true
-                      })}
-                    </Typography>
-                  </Box>
-                  <Avatar
-                    variant="rounded"
+                  <CardWrapperPrimary>
+                    {msg.message}
+                  </CardWrapperPrimary>
+                  <Typography
+                    variant="subtitle1"
                     sx={{
-                      width: 50,
-                      height: 50
+                      pt: 1,
+                      display: 'flex',
+                      alignItems: 'center'
                     }}
-                    alt={user.name}
-                    src={user.avatar}
-                  />
+                  >
+                    <ScheduleTwoToneIcon
+                      sx={{
+                        mr: 0.5
+                      }}
+                      fontSize="small"
+                    />
+                    {formatDistance(subHours(new Date(), 125), new Date(), {
+                      addSuffix: true
+                    })}
+                  </Typography>
                 </Box>
-                )
+                <Avatar
+                  variant="rounded"
+                  sx={{
+                    width: 50,
+                    height: 50
+                  }}
+                  alt={user.name}
+                  src={user.avatar}
+                />
+              </Box>
+              )
+        } else {
+          return (
+            ( <Box
+        display="flex"
+        alignItems="flex-start"
+        justifyContent="flex-start"
+        py={3}
+      >
+        <Avatar
+          variant="rounded"
+          sx={{
+            width: 50,
+            height: 50
+          }}
+          alt="Zain Baptista"
+          src="/static/images/avatars/2.jpg"
+        />
+        <Box
+          display="flex"
+          alignItems="flex-start"
+          flexDirection="column"
+          justifyContent="flex-start"
+          ml={2}
+        >
+          <CardWrapperSecondary>
+            {msg.message}
+          </CardWrapperSecondary>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              pt: 1,
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <ScheduleTwoToneIcon
+              sx={{
+                mr: 0.5
+              }}
+              fontSize="small"
+            />
+            {formatDistance(subHours(new Date(), 115), new Date(), {
+              addSuffix: true
             })}
+          </Typography>
+        </Box>
+      </Box> 
+      )
+          )
+        }
+      })
+    }
       {/*  Message Receive */}
       {/* <Box
         display="flex"
