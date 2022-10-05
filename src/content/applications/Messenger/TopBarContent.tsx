@@ -82,7 +82,7 @@ const AccordionSummaryWrapper = styled(AccordionSummary)(
 `
 );
 
-function TopBarContent() {
+function TopBarContent(props) {
   const theme = useTheme();
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -102,7 +102,7 @@ function TopBarContent() {
     <>
       <RootWrapper>
         <Box display="flex" alignItems="center">
-          <Avatar
+          {/* <Avatar
             variant="rounded"
             sx={{
               width: 48,
@@ -110,9 +110,9 @@ function TopBarContent() {
             }}
             alt="Zain Baptista"
             src="/static/images/avatars/1.jpg"
-          />
+          /> */}
           <Box ml={1}>
-            <Typography variant="h4">Zain Baptista</Typography>
+            <Typography variant="h4">{props.roomInfo.name}</Typography>
             <Typography variant="subtitle1">
               {formatDistance(subMinutes(new Date(), 8), new Date(), {
                 addSuffix: true

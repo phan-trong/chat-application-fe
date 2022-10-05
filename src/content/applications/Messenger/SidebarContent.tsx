@@ -28,6 +28,7 @@ import Label from 'src/components/Label';
 import CheckTwoToneIcon from '@mui/icons-material/CheckTwoTone';
 import AlarmTwoToneIcon from '@mui/icons-material/AlarmTwoTone';
 import { Link as RouterLink } from 'react-router-dom';
+import authService from 'src/services/auth.service';
 
 const AvatarSuccess = styled(Avatar)(
   ({ theme }) => `
@@ -92,12 +93,8 @@ const TabsContainerWrapper = styled(Box)(
   `
 );
 
-function SidebarContent() {
-  const user = {
-    name: 'Catherine Pike',
-    avatar: '/static/images/avatars/1.jpg',
-    jobtitle: 'Software Developer'
-  };
+function SidebarContent(props) {
+  const user = authService.getCurrentUser();
 
   const [state, setState] = useState({
     invisible: true
@@ -110,12 +107,19 @@ function SidebarContent() {
     });
   };
 
+  const joinPrivateRoom = (room: any) => {
+    props.sendMessage(JSON.stringify({
+      action: 'join-room-private',
+      message: room.id
+    }));
+  }
+
   const [currentTab, setCurrentTab] = useState<string>('all');
 
   const tabs = [
-    { value: 'all', label: 'All' },
-    { value: 'unread', label: 'Unread' },
-    { value: 'archived', label: 'Archived' }
+    { value: 'all', label: 'Online' },
+    // { value: 'unread', label: 'Unread' },
+    // { value: 'archived', label: 'Archived' }
   ];
 
   const handleTabsChange = (_event: ChangeEvent<{}>, value: string): void => {
@@ -124,7 +128,7 @@ function SidebarContent() {
 
   return (
     <RootWrapper>
-      <Box display="flex" alignItems="flex-start">
+      {/* <Box display="flex" alignItems="flex-start">
         <Avatar alt={user.name} src={user.avatar} />
         <Box
           sx={{
@@ -142,7 +146,7 @@ function SidebarContent() {
                 {user.name}
               </Typography>
               <Typography variant="subtitle1" noWrap>
-                {user.jobtitle}
+                {user.full_name}
               </Typography>
             </Box>
             <IconButton
@@ -168,9 +172,9 @@ function SidebarContent() {
             label="Invisible"
           />
         </Box>
-      </Box>
+      </Box> */}
 
-      <TextField
+      {/* <TextField
         sx={{
           mt: 2,
           mb: 1
@@ -185,7 +189,7 @@ function SidebarContent() {
           )
         }}
         placeholder="Search..."
-      />
+      /> */}
 
       <Typography
         sx={{
@@ -215,7 +219,32 @@ function SidebarContent() {
       <Box mt={2}>
         {currentTab === 'all' && (
           <List disablePadding component="div">
-            <ListItemWrapper selected>
+            {
+              props.users.map((u,index) => {
+                return (<ListItemWrapper key={index} onClick={() => joinPrivateRoom(u)}>
+                <ListItemAvatar>
+                  <Avatar src="/static/images/avatars/2.jpg" />
+                </ListItemAvatar>
+                <ListItemText
+                  sx={{
+                    mr: 1
+                  }}
+                  primaryTypographyProps={{
+                    color: 'textPrimary',
+                    variant: 'h5',
+                    noWrap: true
+                  }}
+                  secondaryTypographyProps={{
+                    color: 'textSecondary',
+                    noWrap: true
+                  }}
+                  primary={u.Name}
+                  secondary="Online"
+                />
+                </ListItemWrapper>)
+              })
+            }
+            {/* <ListItemWrapper selected>
               <ListItemAvatar>
                 <Avatar src="/static/images/avatars/1.jpg" />
               </ListItemAvatar>
@@ -238,29 +267,9 @@ function SidebarContent() {
               <Label color="primary">
                 <b>2</b>
               </Label>
-            </ListItemWrapper>
-            <ListItemWrapper>
-              <ListItemAvatar>
-                <Avatar src="/static/images/avatars/2.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                sx={{
-                  mr: 1
-                }}
-                primaryTypographyProps={{
-                  color: 'textPrimary',
-                  variant: 'h5',
-                  noWrap: true
-                }}
-                secondaryTypographyProps={{
-                  color: 'textSecondary',
-                  noWrap: true
-                }}
-                primary="Kierra Herwitz"
-                secondary="Hi! Did you manage to send me those documents"
-              />
-            </ListItemWrapper>
-            <ListItemWrapper>
+            </ListItemWrapper> */}
+            
+            {/* <ListItemWrapper>
               <ListItemAvatar>
                 <Avatar src="/static/images/avatars/3.jpg" />
               </ListItemAvatar>
@@ -280,8 +289,8 @@ function SidebarContent() {
                 primary="Craig Vaccaro"
                 secondary="Ola, I still haven't received the program schedule"
               />
-            </ListItemWrapper>
-            <ListItemWrapper>
+            </ListItemWrapper> */}
+            {/* <ListItemWrapper>
               <ListItemAvatar>
                 <Avatar src="/static/images/avatars/4.jpg" />
               </ListItemAvatar>
@@ -304,7 +313,7 @@ function SidebarContent() {
               <Label color="primary">
                 <b>8</b>
               </Label>
-            </ListItemWrapper>
+            </ListItemWrapper> */}
           </List>
         )}
         {currentTab === 'unread' && (

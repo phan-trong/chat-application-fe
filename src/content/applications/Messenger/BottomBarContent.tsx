@@ -10,8 +10,8 @@ import {
 } from '@mui/material';
 import AttachFileTwoToneIcon from '@mui/icons-material/AttachFileTwoTone';
 import SendTwoToneIcon from '@mui/icons-material/SendTwoTone';
-import { sendMsg } from "src/websocket";
 import { useState } from 'react';
+import authService from 'src/services/auth.service';
 
 const MessageInputWrapper = styled(InputBase)(
   ({ theme }) => `
@@ -28,22 +28,35 @@ const Input = styled('input')({
 function BottomBarContent(props) {
   const theme = useTheme();
 
-  const user = {
-    name: 'Catherine Pike',
-    avatar: '/static/images/avatars/1.jpg'
-  };
-
+  const user =  authService.getCurrentUser();
+  
   const [message, setMessage] = useState("");
 
   const handleSendMessage = (event) => {
     if(event.keyCode === 13) {
-      sendMsg(message);
+      props.sendMessage(JSON.stringify({
+        action: 'send-message',
+        message: message,
+        target: {
+          id: props.roomInfo.id,
+          name: props.roomInfo.name,
+          private: props.roomInfo.private
+        }
+      }));
       setMessage("");
     }
   }
 
   const handleClickSendMessage = () => {
-    sendMsg(message);
+    props.sendMessage(JSON.stringify({
+      action: 'send-message',
+      message: message,
+      target: {
+        id: props.roomInfo.id,
+        name: props.roomInfo.name,
+        private: props.roomInfo.private
+      }
+    }));
     setMessage("");
   }
 

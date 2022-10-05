@@ -9,7 +9,6 @@ import ChatContent from './ChatContent';
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 
 import Scrollbar from 'src/components/Scrollbar';
-import { connect, sendMsg } from "src/websocket";
 
 import {
   Box,
@@ -19,6 +18,7 @@ import {
   IconButton,
   useTheme
 } from '@mui/material';
+import authService from 'src/services/auth.service';
 
 const RootWrapper = styled(Box)(
   ({ theme }) => `
@@ -74,19 +74,118 @@ const DrawerWrapperMobile = styled(Drawer)(
 `
 );
 
-function ApplicationsMessenger() {
+const user = authService.getCurrentUser();
+const socket = new WebSocket(`ws://localhost:8080/ws?id=${user.id}`);
+
+export default function ApplicationsMessenger() {
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
+  const [room, setRoom] = useState<any>();
+  const [rooms, setRooms] = useState([]);
+  const [users, setUsers] = useState([])
+
+  let connect = cb => {
+    console.log("Attempting Connection...");
+  
+    socket.onopen = () => {
+      console.log("Successfully Connected");
+    };
+  
+    socket.onmessage = msg => {
+      console.log(msg);
+      cb(msg);
+    };
+  
+    socket.onclose = event => {
+      console.log("Socket Closed Connection: ", event);
+    };
+  
+    socket.onerror = error => {
+      console.log("Socket Error: ", error);
+    };
+  };
+  
+  const sendMsg = msg => {
+    console.log("sending msg: ", msg);
+    socket.send(msg);
+  };
 
   useEffect(() => {
     connect((msg) => {
       console.log("New Message: ", msg.data)
-      setChatHistory([
-        ...chatHistory, msg.data
-      ])
+      handleNewMessage(msg)
+      // setChatHistory([
+      //   ...chatHistory, msg.data
+      // ])
     });
-  }, [chatHistory]);
+  }, [users, room]);
+
+  const handleNewMessage = (event) => {
+    let data = event.data;
+      data = data.split(/\r?\n/);
+      for (let i = 0; i < data.length; i++) {
+        let msg = JSON.parse(data[i]);
+        switch (msg.action) {
+          case "send-message":
+            handleChatMessage(msg);
+            break;
+          case "user-join":
+            handleUserJoined(msg);
+            break;
+          case "user-left":
+            handleUserLeft(msg);
+            break;
+          case "room-joined":
+            handleRoomJoined(msg);
+            break;
+          default:
+            break;
+        }
+      }
+  }
+
+  const handleChatMessage = (msg) => {
+    // findRoom(msg.target.id);
+    // if(typeof room !== "undefined") {
+    //   room.messages.push(msg);
+    // }
+    const roomTmp = {...room}
+    roomTmp.messages.push(msg)
+    setRoom(roomTmp)
+    console.log(roomTmp)
+  }
+  
+  const handleUserJoined = (msg) => {
+    console.log(msg.sender)
+    setUsers([...users,msg.sender])
+  }
+
+  const handleUserLeft = (msg) => {
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].id == msg.sender.id) {
+        users.splice(i, 1);
+      }
+    }
+  }
+
+  const findRoom = (roomId) => {
+    for (let i = 0; i < rooms.length; i++) {
+      if (rooms[i].id === roomId) {
+        setRoom(rooms[i]);
+      }
+    }
+  }
+
+  const handleRoomJoined = (msg) => {
+    setRoom({
+      ...msg.target,
+      name: msg.target.private ? msg.target.name : msg.sender.Name,
+      messages: []
+    });
+    // Todo: View List Room
+    // this.rooms.push(room);
+  }
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -117,39 +216,42 @@ function ApplicationsMessenger() {
           }}
         >
           <Scrollbar>
-            <SidebarContent />
+            <SidebarContent users={users} sendMessage={sendMsg} />
           </Scrollbar>
         </Sidebar>
-        <ChatWindow>
-          <ChatTopBar
-            sx={{
-              display: { xs: 'flex', lg: 'inline-block' }
-            }}
-          >
-            <IconButtonToggle
+        {
+          room == null ? 
+          <ChatWindow></ChatWindow> : 
+          <ChatWindow>
+            <ChatTopBar
               sx={{
-                display: { lg: 'none', xs: 'flex' },
-                mr: 2
+                display: { xs: 'flex', lg: 'inline-block' }
               }}
-              color="primary"
-              onClick={handleDrawerToggle}
-              size="small"
             >
-              <MenuTwoToneIcon />
-            </IconButtonToggle>
-            <TopBarContent />
-          </ChatTopBar>
-          <Box flex={1}>
-            <Scrollbar>
-              <ChatContent chatHistory={chatHistory} />
-            </Scrollbar>
-          </Box>
-          <Divider />
-          <BottomBarContent />
-        </ChatWindow>
+              <IconButtonToggle
+                sx={{
+                  display: { lg: 'none', xs: 'flex' },
+                  mr: 2
+                }}
+                color="primary"
+                onClick={handleDrawerToggle}
+                size="small"
+              >
+                <MenuTwoToneIcon />
+              </IconButtonToggle>
+              <TopBarContent roomInfo={room} />
+            </ChatTopBar>
+            <Box flex={1}>
+              <Scrollbar>
+                <ChatContent chatHistory={typeof room !== "undefined" ? room?.messages : []} />
+              </Scrollbar>
+            </Box>
+            <Divider />
+            <BottomBarContent sendMessage={sendMsg} roomInfo={room}/>
+          </ChatWindow>
+        }
       </RootWrapper>
     </>
   );
 }
 
-export default ApplicationsMessenger;
