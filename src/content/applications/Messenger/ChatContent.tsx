@@ -69,11 +69,10 @@ function ChatContent(props) {
         {format(subDays(new Date(), 3), 'MMMM dd yyyy')}
       </DividerWrapper>
       {props.chatHistory.map((msg, index) => {
-        if(msg.sender.id == user.id) {
-          
+        if(msg.sender.id == user.id) { 
           return (
                 <Box
-                key={index}
+                key={user.id + ' ' +index}
                 display="flex"
                 alignItems="flex-start"
                 justifyContent="flex-end"
@@ -118,10 +117,11 @@ function ChatContent(props) {
                   src={user.avatar}
                 />
               </Box>
-              )
+          )
         } else {
           return (
             ( <Box
+              key={msg.sender.id + ' ' + index}
         display="flex"
         alignItems="flex-start"
         justifyContent="flex-start"
@@ -171,99 +171,6 @@ function ChatContent(props) {
         }
       })
     }
-      {/*  Message Receive */}
-      {/* <Box
-        display="flex"
-        alignItems="flex-start"
-        justifyContent="flex-start"
-        py={3}
-      >
-        <Avatar
-          variant="rounded"
-          sx={{
-            width: 50,
-            height: 50
-          }}
-          alt="Zain Baptista"
-          src="/static/images/avatars/2.jpg"
-        />
-        <Box
-          display="flex"
-          alignItems="flex-start"
-          flexDirection="column"
-          justifyContent="flex-start"
-          ml={2}
-        >
-          <CardWrapperSecondary>
-            Hi. Can you send me the missing invoices asap?
-          </CardWrapperSecondary>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              pt: 1,
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <ScheduleTwoToneIcon
-              sx={{
-                mr: 0.5
-              }}
-              fontSize="small"
-            />
-            {formatDistance(subHours(new Date(), 115), new Date(), {
-              addSuffix: true
-            })}
-          </Typography>
-        </Box>
-      </Box> */}
-      {/*  Message Send */}
-      {/* <Box
-        display="flex"
-        alignItems="flex-start"
-        justifyContent="flex-end"
-        py={3}
-      >
-        <Box
-          display="flex"
-          alignItems="flex-end"
-          flexDirection="column"
-          justifyContent="flex-end"
-          mr={2}
-        >
-          <CardWrapperPrimary>
-            Yes, I'll email them right now. I'll let you know once the remaining
-            invoices are done.
-          </CardWrapperPrimary>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              pt: 1,
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <ScheduleTwoToneIcon
-              sx={{
-                mr: 0.5
-              }}
-              fontSize="small"
-            />
-            {formatDistance(subHours(new Date(), 125), new Date(), {
-              addSuffix: true
-            })}
-          </Typography>
-        </Box>
-        <Avatar
-          variant="rounded"
-          sx={{
-            width: 50,
-            height: 50
-          }}
-          alt={user.name}
-          src={user.avatar}
-        />
-      </Box> */}
     </Box>
   );
 }

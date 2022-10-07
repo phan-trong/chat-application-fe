@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Helmet } from 'react-helmet-async';
 
@@ -16,9 +16,17 @@ import {
   Divider,
   Drawer,
   IconButton,
-  useTheme
+  useTheme,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  TextField
 } from '@mui/material';
 import authService from 'src/services/auth.service';
+import { Room } from 'src/models/room';
 
 const RootWrapper = styled(Box)(
   ({ theme }) => `
@@ -75,15 +83,29 @@ const DrawerWrapperMobile = styled(Drawer)(
 );
 
 const user = authService.getCurrentUser();
-const socket = new WebSocket(`ws://localhost:8080/ws?id=${user.id}`);
+const socket = new WebSocket(`ws://localhost:8080/ws?id=${user.id}&token=${localStorage.getItem("token")}`);
 
 export default function ApplicationsMessenger() {
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
+  // const [chatHistory, setChatHistory] = useState([]);
   const [room, setRoom] = useState<any>();
-  const [rooms, setRooms] = useState([]);
-  const [users, setUsers] = useState([])
+  const [roomName, setRoomName] = useState("");
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [users, setUsers] = useState([]);
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    if(roomName != "") {
+      socket.send(JSON.stringify({ action: 'join-room', message: roomName }));
+      setRoomName("");
+    }
+    setOpen(false);
+  };
 
   let connect = cb => {
     console.log("Attempting Connection...");
@@ -111,17 +133,14 @@ export default function ApplicationsMessenger() {
     socket.send(msg);
   };
 
-  useEffect(() => {
+  useEffect(()=> {
     connect((msg) => {
       console.log("New Message: ", msg.data)
       handleNewMessage(msg)
-      // setChatHistory([
-      //   ...chatHistory, msg.data
-      // ])
     });
-  }, [users, room]);
+  }, [users.length, room]);
 
-  const handleNewMessage = (event) => {
+  const handleNewMessage = async (event) => {
     let data = event.data;
       data = data.split(/\r?\n/);
       for (let i = 0; i < data.length; i++) {
@@ -131,13 +150,16 @@ export default function ApplicationsMessenger() {
             handleChatMessage(msg);
             break;
           case "user-join":
-            handleUserJoined(msg);
+            await handleUserJoined(msg);
             break;
           case "user-left":
             handleUserLeft(msg);
             break;
           case "room-joined":
             handleRoomJoined(msg);
+            break;
+          case "join-room":
+            
             break;
           default:
             break;
@@ -146,27 +168,11 @@ export default function ApplicationsMessenger() {
   }
 
   const handleChatMessage = (msg) => {
-    // findRoom(msg.target.id);
-    // if(typeof room !== "undefined") {
-    //   room.messages.push(msg);
-    // }
+    findRoom(msg.target.id);
+
     const roomTmp = {...room}
     roomTmp.messages.push(msg)
     setRoom(roomTmp)
-    console.log(roomTmp)
-  }
-  
-  const handleUserJoined = (msg) => {
-    console.log(msg.sender)
-    setUsers([...users,msg.sender])
-  }
-
-  const handleUserLeft = (msg) => {
-    for (let i = 0; i < users.length; i++) {
-      if (users[i].id == msg.sender.id) {
-        users.splice(i, 1);
-      }
-    }
   }
 
   const findRoom = (roomId) => {
@@ -178,24 +184,93 @@ export default function ApplicationsMessenger() {
   }
 
   const handleRoomJoined = (msg) => {
-    setRoom({
+    let room = {
       ...msg.target,
-      name: msg.target.private ? msg.target.name : msg.sender.Name,
-      messages: []
-    });
-    // Todo: View List Room
-    // this.rooms.push(room);
+      name: msg.target.private ? msg.target.name : msg.target.name,
+      messages: [],
+    };
+    
+    setRooms((rooms) => [
+      ...rooms,
+      room
+    ])
+
+    setRoom(room);
+
+    console.log(rooms)
+  }
+
+  const handleUserJoined = (msg) => {
+    let isExists = false;
+    for (let i = 0; i < users.length; i++) {
+      if(users[i].id == msg.sender.id) {
+        isExists = true;
+      }
+    }
+    if(!isExists) {
+      setUsers((users)=> [
+        ...users,
+        {
+          ...msg.sender
+        }
+      ])
+    }
+  }
+
+  const handleUserLeft = (msg) => {
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].id == msg.sender.id) {
+        users.splice(i, 1);
+      }
+    }
   }
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const handleChooseRoom = (roomId) => {
+    console.log(rooms);
+    findRoom(roomId);
+  }
+
+  const setRoomNameValue = (event) => {
+    setRoomName(event.target.value);
+  }
+
   return (
-    <>
+    <React.Fragment>
       <Helmet>
         <title>Messenger - Applications</title>
       </Helmet>
+      <div>
+      {/* <Button variant="outlined" onClick={handleClickOpen}>
+        Open form dialog
+      </Button> */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Room Name</DialogTitle>
+        <DialogContent>
+          {/* <DialogContentText>
+            To subscribe to this website, please enter your email address here. We
+            will send updates occasionally.
+          </DialogContentText> */}
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Name"
+            type="text"
+            fullWidth
+            variant="standard"
+            onChange={setRoomNameValue}
+          />
+        </DialogContent>
+        <DialogActions>
+          {/* <Button onClick={handleClose}>Cancel</Button> */}
+          <Button onClick={handleClose}>Create</Button>
+        </DialogActions>
+      </Dialog>
+    </div>
       <RootWrapper className="Mui-FixedWrapper">
         <DrawerWrapperMobile
           sx={{
@@ -216,7 +291,7 @@ export default function ApplicationsMessenger() {
           }}
         >
           <Scrollbar>
-            <SidebarContent users={users} sendMessage={sendMsg} />
+            <SidebarContent key={users} users={users} rooms={rooms} sendMessage={sendMsg} chooseRoom={handleChooseRoom} openPopup={handleClickOpen} closePopup={handleClose}/>
           </Scrollbar>
         </Sidebar>
         {
@@ -243,7 +318,7 @@ export default function ApplicationsMessenger() {
             </ChatTopBar>
             <Box flex={1}>
               <Scrollbar>
-                <ChatContent chatHistory={typeof room !== "undefined" ? room?.messages : []} />
+                <ChatContent chatHistory={room.messages} />
               </Scrollbar>
             </Box>
             <Divider />
@@ -251,7 +326,7 @@ export default function ApplicationsMessenger() {
           </ChatWindow>
         }
       </RootWrapper>
-    </>
+    </React.Fragment>
   );
 }
 
