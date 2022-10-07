@@ -244,7 +244,7 @@ function SidebarContent(props) {
               </Tooltip>
             </AvatarGroup> */}
   
-            <Button variant="contained" size="small" onClick={() => props.chooseRoom(room.id)}>
+            <Button variant="contained" size="small" onClick={() => props.chooseRoom(room)}>
               Attend
             </Button>
           </Box>

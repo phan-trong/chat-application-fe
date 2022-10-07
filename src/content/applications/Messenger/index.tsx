@@ -101,7 +101,7 @@ export default function ApplicationsMessenger() {
 
   const handleClose = () => {
     if(roomName != "") {
-      socket.send(JSON.stringify({ action: 'join-room', message: roomName }));
+      sendMsg(JSON.stringify({ action: 'join-room', message: roomName }));
       setRoomName("");
     }
     setOpen(false);
@@ -140,7 +140,7 @@ export default function ApplicationsMessenger() {
     });
   }, [users.length, room]);
 
-  const handleNewMessage = async (event) => {
+  const handleNewMessage = (event) => {
     let data = event.data;
       data = data.split(/\r?\n/);
       for (let i = 0; i < data.length; i++) {
@@ -150,7 +150,7 @@ export default function ApplicationsMessenger() {
             handleChatMessage(msg);
             break;
           case "user-join":
-            await handleUserJoined(msg);
+            handleUserJoined(msg);
             break;
           case "user-left":
             handleUserLeft(msg);
@@ -158,8 +158,8 @@ export default function ApplicationsMessenger() {
           case "room-joined":
             handleRoomJoined(msg);
             break;
-          case "join-room":
-            
+          case "create-room":
+            handleCreateRoom(msg);
             break;
           default:
             break;
@@ -168,11 +168,17 @@ export default function ApplicationsMessenger() {
   }
 
   const handleChatMessage = (msg) => {
-    findRoom(msg.target.id);
+    const newRooms = rooms.map(obj => {
+      if (obj.id === msg.target.id) {
+        const roomTmp = {...room}
+        roomTmp.messages.push(msg)
+        return roomTmp
+      }
 
-    const roomTmp = {...room}
-    roomTmp.messages.push(msg)
-    setRoom(roomTmp)
+      return obj;
+    });
+
+    setRooms(newRooms)
   }
 
   const findRoom = (roomId) => {
@@ -183,7 +189,28 @@ export default function ApplicationsMessenger() {
     }
   }
 
+  const handleCreateRoom = (msg) => {
+    let room = {
+      ...msg.target,
+      name: msg.target.name,
+      messages: [],
+    };
+
+    setRooms((rooms) => [
+      ...rooms,
+      room
+    ])
+  }
+
   const handleRoomJoined = (msg) => {
+    // Remove room exists
+    let newRooms = rooms.filter(obj => {
+      if (obj.id !== msg.target.id) {
+        return obj;
+      }
+    });
+    setRooms(newRooms);
+
     let room = {
       ...msg.target,
       name: msg.target.private ? msg.target.name : msg.target.name,
@@ -211,7 +238,7 @@ export default function ApplicationsMessenger() {
       setUsers((users)=> [
         ...users,
         {
-          ...msg.sender
+          ...msg.sender,
         }
       ])
     }
@@ -229,9 +256,13 @@ export default function ApplicationsMessenger() {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleChooseRoom = (roomId) => {
+  const handleChooseRoom = (room) => {
     console.log(rooms);
-    findRoom(roomId);
+    findRoom(room.id);
+    sendMsg(JSON.stringify({
+      action: 'join-room',
+      message: room.name
+    }))
   }
 
   const setRoomNameValue = (event) => {
@@ -318,7 +349,7 @@ export default function ApplicationsMessenger() {
             </ChatTopBar>
             <Box flex={1}>
               <Scrollbar>
-                <ChatContent chatHistory={room.messages} />
+                <ChatContent chatHistory={room.messages} room={room}/>
               </Scrollbar>
             </Box>
             <Divider />
