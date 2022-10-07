@@ -96,6 +96,8 @@ const TabsContainerWrapper = styled(Box)(
 function SidebarContent(props) {
   const user = authService.getCurrentUser();
 
+  const [users, setUsers] = useState(props.users)
+
   const [state, setState] = useState({
     invisible: true
   });
@@ -128,69 +130,6 @@ function SidebarContent(props) {
 
   return (
     <RootWrapper>
-      {/* <Box display="flex" alignItems="flex-start">
-        <Avatar alt={user.name} src={user.avatar} />
-        <Box
-          sx={{
-            ml: 1.5,
-            flex: 1
-          }}
-        >
-          <Box
-            display="flex"
-            alignItems="flex-start"
-            justifyContent="space-between"
-          >
-            <Box>
-              <Typography variant="h5" noWrap>
-                {user.name}
-              </Typography>
-              <Typography variant="subtitle1" noWrap>
-                {user.full_name}
-              </Typography>
-            </Box>
-            <IconButton
-              sx={{
-                p: 1
-              }}
-              size="small"
-              color="primary"
-            >
-              <SettingsTwoToneIcon fontSize="small" />
-            </IconButton>
-          </Box>
-
-          <FormControlLabel
-            control={
-              <Switch
-                checked={state.invisible}
-                onChange={handleChange}
-                name="invisible"
-                color="primary"
-              />
-            }
-            label="Invisible"
-          />
-        </Box>
-      </Box> */}
-
-      {/* <TextField
-        sx={{
-          mt: 2,
-          mb: 1
-        }}
-        size="small"
-        fullWidth
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchTwoToneIcon />
-            </InputAdornment>
-          )
-        }}
-        placeholder="Search..."
-      /> */}
-
       <Typography
         sx={{
           mb: 1,
@@ -220,7 +159,7 @@ function SidebarContent(props) {
         {currentTab === 'all' && (
           <List disablePadding component="div">
             {
-              props.users.map((u,index) => {
+              users.map((u,index) => {
                 return (<ListItemWrapper key={index} onClick={() => joinPrivateRoom(u)}>
                 <ListItemAvatar>
                   <Avatar src="/static/images/avatars/2.jpg" />
@@ -244,158 +183,10 @@ function SidebarContent(props) {
                 </ListItemWrapper>)
               })
             }
-            {/* <ListItemWrapper selected>
-              <ListItemAvatar>
-                <Avatar src="/static/images/avatars/1.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                sx={{
-                  mr: 1
-                }}
-                primaryTypographyProps={{
-                  color: 'textPrimary',
-                  variant: 'h5',
-                  noWrap: true
-                }}
-                secondaryTypographyProps={{
-                  color: 'textSecondary',
-                  noWrap: true
-                }}
-                primary="Zain Baptista"
-                secondary="Hey there, how are you today? Is it ok if I call you?"
-              />
-              <Label color="primary">
-                <b>2</b>
-              </Label>
-            </ListItemWrapper> */}
-            
-            {/* <ListItemWrapper>
-              <ListItemAvatar>
-                <Avatar src="/static/images/avatars/3.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                sx={{
-                  mr: 1
-                }}
-                primaryTypographyProps={{
-                  color: 'textPrimary',
-                  variant: 'h5',
-                  noWrap: true
-                }}
-                secondaryTypographyProps={{
-                  color: 'textSecondary',
-                  noWrap: true
-                }}
-                primary="Craig Vaccaro"
-                secondary="Ola, I still haven't received the program schedule"
-              />
-            </ListItemWrapper> */}
-            {/* <ListItemWrapper>
-              <ListItemAvatar>
-                <Avatar src="/static/images/avatars/4.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                sx={{
-                  mr: 1
-                }}
-                primaryTypographyProps={{
-                  color: 'textPrimary',
-                  variant: 'h5',
-                  noWrap: true
-                }}
-                secondaryTypographyProps={{
-                  color: 'textSecondary',
-                  noWrap: true
-                }}
-                primary="Adison Press"
-                secondary="I recently did some buying on Amazon and now I'm stuck"
-              />
-              <Label color="primary">
-                <b>8</b>
-              </Label>
-            </ListItemWrapper> */}
           </List>
-        )}
-        {currentTab === 'unread' && (
-          <List disablePadding component="div">
-            <ListItemWrapper>
-              <ListItemAvatar>
-                <Avatar src="/static/images/avatars/1.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                sx={{
-                  mr: 1
-                }}
-                primaryTypographyProps={{
-                  color: 'textPrimary',
-                  variant: 'h5',
-                  noWrap: true
-                }}
-                secondaryTypographyProps={{
-                  color: 'textSecondary',
-                  noWrap: true
-                }}
-                primary="Zain Baptista"
-                secondary="Hey there, how are you today? Is it ok if I call you?"
-              />
-              <Label color="primary">
-                <b>2</b>
-              </Label>
-            </ListItemWrapper>
-            <ListItemWrapper>
-              <ListItemAvatar>
-                <Avatar src="/static/images/avatars/4.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                sx={{
-                  mr: 1
-                }}
-                primaryTypographyProps={{
-                  color: 'textPrimary',
-                  variant: 'h5',
-                  noWrap: true
-                }}
-                secondaryTypographyProps={{
-                  color: 'textSecondary',
-                  noWrap: true
-                }}
-                primary="Adison Press"
-                secondary="I recently did some buying on Amazon and now I'm stuck"
-              />
-              <Label color="primary">
-                <b>8</b>
-              </Label>
-            </ListItemWrapper>
-          </List>
-        )}
-        {currentTab === 'archived' && (
-          <Box pb={3}>
-            <Divider
-              sx={{
-                mb: 3
-              }}
-            />
-            <AvatarSuccess>
-              <CheckTwoToneIcon />
-            </AvatarSuccess>
-            <Typography
-              sx={{
-                mt: 2,
-                textAlign: 'center'
-              }}
-              variant="subtitle2"
-            >
-              Hurray! There are no archived chats!
-            </Typography>
-            <Divider
-              sx={{
-                mt: 3
-              }}
-            />
-          </Box>
         )}
       </Box>
-      <Box display="flex" pb={1} mt={4} alignItems="center">
+      <Box display="flex" pb={1} mt={4} alignItems="center" justifyContent={"space-between"}>
         <Typography
           sx={{
             mr: 1
@@ -404,133 +195,63 @@ function SidebarContent(props) {
         >
           Chat Room
         </Typography>
-        <Label color="success">
-          <b>2</b>
-        </Label>
+        <Button variant="contained" color="success" onClick={props.openPopup}>
+          <b>+</b>
+        </Button>
       </Box>
-      <MeetingBox>
-        <Typography variant="h4">Daily Design Meeting</Typography>
-
-        <Box py={3} display="flex" alignItems="flex-start">
-          <AlarmTwoToneIcon />
-          <Box pl={1}>
-            <Typography
-              variant="subtitle2"
-              sx={{
-                lineHeight: 1
-              }}
-              color="text.primary"
-            >
-              10:00 - 11:30
-            </Typography>
-            <Typography variant="subtitle1">
-              {formatDistance(subMinutes(new Date(), 12), new Date(), {
-                addSuffix: true
-              })}
-            </Typography>
+      {
+        props.rooms.map((room,index) => {
+          
+          return (<MeetingBox key={index}>
+          <Typography variant="h4">{room.private ? "Private_" + room.name : room.name}</Typography>
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            {/* <AvatarGroup>
+              <Tooltip arrow title="View profile for Remy Sharp">
+                <Avatar
+                  sx={{
+                    width: 28,
+                    height: 28
+                  }}
+                  component={RouterLink}
+                  to="#"
+                  alt="Remy Sharp"
+                  src="/static/images/avatars/1.jpg"
+                />
+              </Tooltip>
+              <Tooltip arrow title="View profile for Travis Howard">
+                <Avatar
+                  sx={{
+                    width: 28,
+                    height: 28
+                  }}
+                  component={RouterLink}
+                  to="#"
+                  alt="Travis Howard"
+                  src="/static/images/avatars/2.jpg"
+                />
+              </Tooltip>
+              <Tooltip arrow title="View profile for Craig Vaccaro">
+                <Avatar
+                  sx={{
+                    width: 28,
+                    height: 28
+                  }}
+                  component={RouterLink}
+                  to="#"
+                  alt="Craig Vaccaro"
+                  src="/static/images/avatars/3.jpg"
+                />
+              </Tooltip>
+            </AvatarGroup> */}
+  
+            <Button variant="contained" size="small" onClick={() => props.chooseRoom(room.id)}>
+              Attend
+            </Button>
           </Box>
-        </Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <AvatarGroup>
-            <Tooltip arrow title="View profile for Remy Sharp">
-              <Avatar
-                sx={{
-                  width: 28,
-                  height: 28
-                }}
-                component={RouterLink}
-                to="#"
-                alt="Remy Sharp"
-                src="/static/images/avatars/1.jpg"
-              />
-            </Tooltip>
-            <Tooltip arrow title="View profile for Travis Howard">
-              <Avatar
-                sx={{
-                  width: 28,
-                  height: 28
-                }}
-                component={RouterLink}
-                to="#"
-                alt="Travis Howard"
-                src="/static/images/avatars/2.jpg"
-              />
-            </Tooltip>
-            <Tooltip arrow title="View profile for Craig Vaccaro">
-              <Avatar
-                sx={{
-                  width: 28,
-                  height: 28
-                }}
-                component={RouterLink}
-                to="#"
-                alt="Craig Vaccaro"
-                src="/static/images/avatars/3.jpg"
-              />
-            </Tooltip>
-          </AvatarGroup>
-
-          <Button variant="contained" size="small">
-            Attend
-          </Button>
-        </Box>
-      </MeetingBox>
-
-      <MeetingBox>
-        <Typography variant="h4">Investors Council Meeting</Typography>
-
-        <Box py={3} display="flex" alignItems="flex-start">
-          <AlarmTwoToneIcon />
-          <Box pl={1}>
-            <Typography
-              variant="subtitle2"
-              sx={{
-                lineHeight: 1
-              }}
-              color="text.primary"
-            >
-              14:30 - 16:15
-            </Typography>
-            <Typography variant="subtitle1">
-              {formatDistance(subHours(new Date(), 4), new Date(), {
-                addSuffix: true
-              })}
-            </Typography>
-          </Box>
-        </Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <AvatarGroup>
-            <Tooltip arrow title="View profile for Travis Howard">
-              <Avatar
-                sx={{
-                  width: 28,
-                  height: 28
-                }}
-                component={RouterLink}
-                to="#"
-                alt="Travis Howard"
-                src="/static/images/avatars/4.jpg"
-              />
-            </Tooltip>
-            <Tooltip arrow title="View profile for Craig Vaccaro">
-              <Avatar
-                sx={{
-                  width: 28,
-                  height: 28
-                }}
-                component={RouterLink}
-                to="#"
-                alt="Craig Vaccaro"
-                src="/static/images/avatars/5.jpg"
-              />
-            </Tooltip>
-          </AvatarGroup>
-
-          <Button variant="contained" size="small">
-            Attend
-          </Button>
-        </Box>
-      </MeetingBox>
+        </MeetingBox>)
+          
+        })
+      }
     </RootWrapper>
   );
 }
