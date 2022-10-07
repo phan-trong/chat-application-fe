@@ -69,59 +69,111 @@ function ChatContent(props) {
         {format(subDays(new Date(), 3), 'MMMM dd yyyy')}
       </DividerWrapper>
       {props.chatHistory.map((msg, index) => {
-        if(msg.sender.id == user.id) { 
-          return (
-                <Box
-                key={user.id + ' ' +index}
-                display="flex"
-                alignItems="flex-start"
-                justifyContent="flex-end"
-                py={3}
-              >
-                <Box
+        if(msg.sender != null) {
+          if(msg.sender.id == user.id) { 
+            return (
+                  <Box
+                  key={user.id + ' ' +index}
                   display="flex"
-                  alignItems="flex-end"
-                  flexDirection="column"
+                  alignItems="flex-start"
                   justifyContent="flex-end"
-                  mr={2}
+                  py={3}
                 >
-                  <CardWrapperPrimary>
-                    {msg.message}
-                  </CardWrapperPrimary>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      pt: 1,
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
+                  <Box
+                    display="flex"
+                    alignItems="flex-end"
+                    flexDirection="column"
+                    justifyContent="flex-end"
+                    mr={2}
                   >
-                    <ScheduleTwoToneIcon
+                    <CardWrapperPrimary>
+                      {msg.message}
+                    </CardWrapperPrimary>
+                    <Typography
+                      variant="subtitle1"
                       sx={{
-                        mr: 0.5
+                        pt: 1,
+                        display: 'flex',
+                        alignItems: 'center'
                       }}
-                      fontSize="small"
-                    />
-                    {formatDistance(subHours(new Date(), 125), new Date(), {
-                      addSuffix: true
-                    })}
-                  </Typography>
+                    >
+                      {/* <ScheduleTwoToneIcon
+                        sx={{
+                          mr: 0.5
+                        }}
+                        fontSize="small"
+                      />
+                      {formatDistance(subHours(new Date(), 125), new Date(), {
+                        addSuffix: true
+                      })} */}
+                    </Typography>
+                  </Box>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      width: 50,
+                      height: 50
+                    }}
+                    alt={user.name}
+                    src={user.avatar}
+                  />
                 </Box>
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    width: 50,
-                    height: 50
-                  }}
-                  alt={user.name}
-                  src={user.avatar}
-                />
-              </Box>
-          )
+            )
+          } else {
+            return (
+              ( <Box
+                key={msg.sender.id + ' ' + index}
+          display="flex"
+          alignItems="flex-start"
+          justifyContent="flex-start"
+          py={3}
+        >
+          <Avatar
+            variant="rounded"
+            sx={{
+              width: 50,
+              height: 50
+            }}
+            alt="Zain Baptista"
+            src="/static/images/avatars/2.jpg"
+          />
+          <Box
+            display="flex"
+            alignItems="flex-start"
+            flexDirection="column"
+            justifyContent="flex-start"
+            ml={2}
+          >
+            <CardWrapperSecondary>
+              {msg.message}
+            </CardWrapperSecondary>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                pt: 1,
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              {/* <ScheduleTwoToneIcon
+                sx={{
+                  mr: 0.5
+                }}
+                fontSize="small"
+              />
+              {formatDistance(subHours(new Date(), 115), new Date(), {
+                addSuffix: true
+              })} */}
+            </Typography>
+          </Box>
+        </Box> 
+        )
+            )
+          }
         } else {
           return (
             ( <Box
-              key={msg.sender.id + ' ' + index}
+              key={msg.target.id + ' ' + index}
         display="flex"
         alignItems="flex-start"
         justifyContent="flex-start"
@@ -154,7 +206,7 @@ function ChatContent(props) {
               alignItems: 'center'
             }}
           >
-            <ScheduleTwoToneIcon
+            {/* <ScheduleTwoToneIcon
               sx={{
                 mr: 0.5
               }}
@@ -162,7 +214,7 @@ function ChatContent(props) {
             />
             {formatDistance(subHours(new Date(), 115), new Date(), {
               addSuffix: true
-            })}
+            })} */}
           </Typography>
         </Box>
       </Box> 
