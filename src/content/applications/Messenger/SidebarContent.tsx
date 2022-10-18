@@ -177,7 +177,7 @@ function SidebarContent(props) {
                     color: 'textSecondary',
                     noWrap: true
                   }}
-                  primary={u.Name}
+                  primary={u.name}
                   secondary="Online"
                 />
                 </ListItemWrapper>)
