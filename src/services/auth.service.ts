@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/v1/passport/";
+const API_URL = process.env.REACT_APP_API_URL + "/v1/passport/";
 
 class AuthService {
   login({email, password}) {
