@@ -48,7 +48,7 @@ export default function SignUp() {
           }
         },
         error => {
-          alert(error.response.data.message)
+          // alert(error.response.data.message)
           const resMessage =
             (error.response &&
               error.response.data &&

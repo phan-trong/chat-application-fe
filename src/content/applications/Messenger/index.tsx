@@ -27,6 +27,7 @@ import {
 } from '@mui/material';
 import authService from 'src/services/auth.service';
 import { Room } from 'src/models/room';
+import messagesService from 'src/services/messages-service';
 
 const RootWrapper = styled(Box)(
   ({ theme }) => `
@@ -83,12 +84,11 @@ const DrawerWrapperMobile = styled(Drawer)(
 );
 
 const user = authService.getCurrentUser();
-const socket = new WebSocket(`ws://localhost:8080/ws?id=${user.id}&token=${localStorage.getItem("token")}`);
+const socket = new WebSocket(`ws://${process.env.REACT_APP_DOMAIN}/api/ws?id=${user.id}&token=${localStorage.getItem("token")}`);
 
 export default function ApplicationsMessenger() {
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
-  // const [chatHistory, setChatHistory] = useState([]);
   const [room, setRoom] = useState<any>();
   const [roomName, setRoomName] = useState("");
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -138,6 +138,10 @@ export default function ApplicationsMessenger() {
       console.log("New Message: ", msg.data)
       handleNewMessage(msg)
     });
+
+    return () => {
+      sendMsg('close')
+    };
   }, [users.length, room]);
 
   const handleNewMessage = (event) => {
